@@ -2,34 +2,31 @@ import os
 import ctypes
 import requests
 import random
+from pathlib import Path
 
 
 def SET_VVALLPAPER(IMG_PATH):
+    """Applies the image path to the Windows desktop."""
     SPI_SETDESKWALLPAPER = 20
     SPIF_UPDATEINIFILE = 0x01
     SPIF_SENDCHANGE = 0x02
+    abs_path = str(Path(IMG_PATH).resolve())
     ctypes.windll.user32.SystemParametersInfoW(
         SPI_SETDESKWALLPAPER,
         0,
-        IMG_PATH,
+        abs_path,
         SPIF_UPDATEINIFILE | SPIF_SENDCHANGE
     )
 
-def GET_VVALLPAPER_VVALLHAVEN():
+def GET_VVALLPAPER_VVALLHAVEN(queries = None):
     FIRST_IMG_PATH = None
     url ="https://wallhaven.cc/api/v1/search"
-    queries = [
-        "nebula",
-        "deep space galaxy",
-        "mars surface landscape",
-        "supernova",
-        "black hole"
-    ]
-    output_dir = "space"
+    output_dir = "wallpapers"
     os.makedirs(output_dir, exist_ok=True)
-    for i in range(5):
+
+    for i, query in enumerate(queries):
         params = {
-            "q": random.choice(queries),
+            "q": query,
             "purity": 100,
             "atleast": "1920x1080",
             "sorting": 'random',
@@ -55,8 +52,11 @@ def GET_VVALLPAPER_VVALLHAVEN():
                     FIRST_IMG_PATH = os.path.abspath(file_path)
 
     if FIRST_IMG_PATH:
-        print(f"SVCCESS")
+        SET_VVALLPAPER(FIRST_IMG_PATH)
+        print("SUCCESS: Wallpapers downloaded and applied!")
+        print("成功: 壁紙のダウンロードと適用が完了しました！")
     else:
-            print("NO VVALLPAPERS COULD BE DOVVNLOADED")
+        print("NO WALLPAPERS COULD BE DOWNLOADED")
+        print("壁紙をダウンロードできませんでした")
 
 

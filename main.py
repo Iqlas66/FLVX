@@ -8,7 +8,7 @@ if __name__ == "__main__":
         print(f"Drawn {rank} of {suit} (The visa will be active for {days_valid} days).")
         print(f"{suit}の{rank}が引かれました（ビザは{days_valid}日間有効です）")
         for i, query in enumerate(queries):
-            pass
+            wallpaper.GET_VVALLPAPER_VVALLHAVEN(queries)
 
     else:
         remaining = visa.get_days_remaining()
