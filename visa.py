@@ -1,53 +1,17 @@
-import os
 import json
-import hmac
-import hashlib
 import datetime
 from pathlib import Path
 import random
 import keyring
+from cryptography.fernet import Fernet, InvalidToken
 
 SERVICE_NAME = "FLVX_Borderland_System"
 SALT_KEY = "encryption_salt"
+KEY_NAME = "TOPPRIORITY"
 CACHE = Path(".flux_core_cache.dat")
 MAIN_FILE = Path("visa.txt")
 DATE_FILE = Path("dates.txt")
 DAYS_FILE = Path("days_valid.txt")
-def get_or_create_salt():
-    salt = keyring.get_password(SERVICE_NAME, SALT_KEY)
-    if not salt:
-        salt = os.urandom(32).hex()
-        keyring.set_password(SERVICE_NAME, SALT_KEY, salt)
-    return salt.encode()
-
-
-def load_cache():
-    if not CACHE.exists():
-        return None, "MISSING"
-    try:
-        salt = get_or_create_salt()
-        if not salt:
-            return None, "TAMPERED"
-        container = json.loads(CACHE.read_text())
-        payload = container["payload"]
-        saved = container["saved_signature"]
-        payload_str = json.dumps(payload, sort_keys=True)
-        expected = hmac.new(salt, payload_str.encode(), hashlib.sha256).hexdigest()
-        if not hmac.compare_digest(saved, expected):
-            return None, "TAMPERED"
-        start_date = datetime.date.fromisoformat(payload["start_date"])
-        days_valid = int(payload["days_valid"])
-        days_passed = (datetime.date.today() - start_date).days
-
-        if days_passed >= days_valid:
-            return payload, "EXPIRED"
-
-        return payload, "VALID"
-
-    except Exception:
-        return None, "TAMPERED"
-
-
 
 SUITS = {
     "Spades": ["running","parkour","bodybuilding"],
@@ -56,20 +20,62 @@ SUITS = {
     "Clubs": ["four elements", "symmetry", "duality"]
 }
 RANKS = ["Ace","2", "3", "4", "5", "6", "7", "8", "9", "10"]
+def get_or_create_key():
+    key = keyring.get_password(SERVICE_NAME, KEY_NAME)
+
+    if key:
+        try:
+            key_bytes = key.encode() if isinstance(key, str) else key
+            Fernet(key_bytes)
+            return key_bytes
+        except Exception:
+            pass
+
+
+    new_key = Fernet.generate_key()
+    keyring.set_password(SERVICE_NAME, KEY_NAME, new_key.decode())
+    return new_key
+
+
+
+
+
+
+def load_cache():
+    if not CACHE.exists():
+        return None, "MISSING"
+    try:
+        key = get_or_create_key()
+        f = Fernet(key)
+        encrypted_data = CACHE.read_bytes()
+        decrypted_data = f.decrypt(encrypted_data)
+        payload = json.loads(decrypted_data.decode())
+        start_date = datetime.date.fromisoformat(payload["start_date"])
+        days_valid = int(payload["days_valid"])
+        days_passed = (datetime.date.today() - start_date).days
+        if days_passed >= days_valid:
+            return payload, "EXPIRED"
+
+        return payload, "VALID"
+
+    except (InvalidToken, Exception):
+        return None, "TAMPERED"
+
+
+
 def save_state(start_date,days_valid):
-    salt = get_or_create_salt()
+    key = get_or_create_key()
+    f = Fernet(key)
+
     payload = {
         "start_date": str(start_date),
         "days_valid": days_valid
     }
-    payload_str = json.dumps(payload, sort_keys=True)
-    signature = hmac.new(salt, payload_str.encode(), hashlib.sha256).hexdigest()
+    payload_str = json.dumps(payload, sort_keys=True).encode()
+    encrypted_data = f.encrypt(payload_str)
 
-    container = {
-        "payload": payload,
-        "saved_signature": signature
-    }
-    CACHE.write_text(json.dumps(container, indent=4))
+    CACHE.write_bytes(encrypted_data)
+
     DAYS_FILE.write_text(str(days_valid))
     DATE_FILE.write_text(str(start_date))
     MAIN_FILE.write_text(
@@ -85,12 +91,8 @@ def draw_card():
     rank = random.choice(RANKS)
     days_valid = RANKS.index(rank) + 1
     queries = random.choices(SUITS[suit], k=days_valid)
-
-    with open(DAYS_FILE, 'w') as f:
-        f.write(str(days_valid))
-
-    with open(DATE_FILE, 'w') as f:
-        f.write(str(datetime.date.today()))
+    today = datetime.date.today()
+    save_state(today, days_valid)
 
     return suit, rank, queries, days_valid
 
@@ -110,6 +112,7 @@ def draw_penalty_card():
 
 def run_visa_check():
     payload,statuts = load_cache()
+    suit, rank, queries, days_valid = draw_card()
 
     if statuts == "TAMPERED":
         return {"status": "PENALTY", "reason": "Tampering detected"}

@@ -1,12 +1,10 @@
 import os
 import ctypes
 import requests
-import random
 from pathlib import Path
 
 
 def SET_VVALLPAPER(IMG_PATH):
-    """Applies the image path to the Windows desktop."""
     SPI_SETDESKWALLPAPER = 20
     SPIF_UPDATEINIFILE = 0x01
     SPIF_SENDCHANGE = 0x02

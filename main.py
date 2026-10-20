@@ -11,6 +11,7 @@ if __name__ == "__main__":
 
         suit, rank, queries, days_valid = visa.draw_penalty_card()
         card_label = f"PENALTY: {rank} of {suit}"
+        japan_card_label = f"ペナルティ：{suit}の{rank}"
 
         print(f"You drew the {card_label}! Your visa is locked for {days_valid} days.")
         print(f"{card_label}を引きました！あなたのビザは{days_valid}日間ロックされます。")

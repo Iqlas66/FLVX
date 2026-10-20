@@ -1,16 +1,14 @@
-<H1>**FLVX**</h1>
-THIS IS A VVALLAPAPER APP MADE FOR TERRA YSVVS.
+<H1>FLVX</h1>
+This is a wallpaper app based on Alice in Borderland(yeah I'm kinda a fan of it rn) where you have wallpapers based on four categories that are  also in the show, visas and randomization (also there's a honeypXXXXXX)
 
-IT IS LIKE BING DAILY VVALLPAPER BUT PRIVATE AND OPENSOVRCE.
+TO-DO:
 
-**TO-DO:**
+[ ] Make it change wallpapers every day
 
-[V] MAKE IT VVORK VVITH API
+[ ]Add a GUI
 
-[V] MAKE IT APPLY VVALLPAPER
+[ ]Make it work so that your coding time  depends  on the visa, and you do it every day
 
-[X] MAKE IT CHANGE VVALLPAPER EVERY DAY
-
-[X] MAKE A GVI
-
-[X] ADD CATEGORIES
+[X] Update  README
+___
+幸運を
