@@ -1,7 +1,8 @@
 import json
 import visa
 import wallpaper
-
+import traceback
+import threading
 if __name__ == "__main__":
     result = visa.run_visa_check()
     status = result.get("status")
@@ -61,9 +62,7 @@ if __name__ == "__main__":
 
     if download_needed:
         try:
-            DETACHED_PROCESS = 0x00000008
-
-            import threading
+            import wallpaper
 
 
             def bg_download():
@@ -72,7 +71,9 @@ if __name__ == "__main__":
                 except:
                     pass
 
+            t = threading.Thread(target=bg_download)
+            t.start()
 
-            threading.Thread(target=bg_download, daemon=True).start()
+            t.join()
         except Exception:
             pass

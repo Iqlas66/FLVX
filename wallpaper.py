@@ -21,6 +21,10 @@ def GET_VVALLPAPER_VVALLHAVEN(queries = None):
     url ="https://wallhaven.cc/api/v1/search"
     output_dir = "wallpapers"
     os.makedirs(output_dir, exist_ok=True)
+    headers = {
+        "User-Agent": "FLVX-Borderland-App/1.0"
+    }
+
 
     for i, query in enumerate(queries):
         params = {
@@ -29,9 +33,9 @@ def GET_VVALLPAPER_VVALLHAVEN(queries = None):
             "atleast": "1920x1080",
             "sorting": 'random',
             "order": "desc",
-            'tag':48189
+
         }
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params,headers=headers)
         if response.status_code == 200:
             data = response.json()
             wallpapers = data.get('data', [])
@@ -40,7 +44,7 @@ def GET_VVALLPAPER_VVALLHAVEN(queries = None):
                 IMG_VRL = wp.get('path')
                 wp_id  = wp.get('id', f"VVALLPAPER_{i}")
                 file_extension =  IMG_VRL.split('.')[-1]
-                img_data = requests.get(IMG_VRL, timeout=30).content
+                img_data = requests.get(IMG_VRL, timeout=30, headers=headers).content
                 file_path = os.path.join(output_dir, f"{i}_{wp_id}.{file_extension}")
                 with open(file_path, 'wb') as handler:
                     handler.write(img_data)
