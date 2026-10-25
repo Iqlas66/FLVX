@@ -144,7 +144,7 @@ def run_visa_check():
     download_needed = str(today) != last_download
 
     if download_needed:
-        save_state(start_date, days_valid, queries, suit, rank, today)
+        save_state(start_date, days_valid, queries, suit, rank, today) #saves states
 
     return {
         "status": "ACTIVE",
@@ -159,9 +159,15 @@ def run_visa_check():
 def get_card_code(rank, suit):
     rank_str = str(rank)
     if rank_str.isdigit():
-        r_code = rank_str[-1]
+        r_code = rank_str[-1]  #if its a digit reterns the last character
     else:
-        r_code = rank_str[0].upper()
+        r_code = rank_str[0].upper() #if its  a word then the first one
 
     s_code = suit[0].upper()
     return f"{r_code}{s_code}"
+
+
+
+#なぜこんなことをしているの？
+#ここは見てはいけないことになっています。
+#〜じゃないの？

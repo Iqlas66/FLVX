@@ -16,7 +16,7 @@ An Electron & Python desktop app that manages daily visa inspired by *Alice in  
 - Python (3.13.13)
 ### Installation
 1. Clone the git repo `
-   git clone https://github.com/Iqlas66/FLVX`
+   git clone https://github.com/Iqlas66/FLVX.git`
 2. cd into flux `cd Flux`
 3. Install Python dependencies `pip install requests keyring cryptography
 `

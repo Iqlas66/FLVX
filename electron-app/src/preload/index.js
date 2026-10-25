@@ -2,7 +2,8 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 const api = {
-  onVisaData: (callback) => ipcRenderer.on('visa-data-update', (_event, value) => callback(value))
+  onVisaData: (callback) => ipcRenderer.on('visa-data-update', (_event, value) => callback(value)),
+  easterEgg: () => ipcRenderer.invoke('easter_egg')
 }
 
 if (process.contextIsolated) {

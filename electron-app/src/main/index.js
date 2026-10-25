@@ -7,7 +7,9 @@ import path from 'path'
 
 let mainWindow = null
 let tray = null
-
+ipcMain.handle('easter_egg', async () => {
+  await shell.openExternal('https://short.do/TdtikI')
+})
 function fetchVisaData(mainWindow) {
   const pythonScript = path.join(__dirname, '../../../main.py')
 

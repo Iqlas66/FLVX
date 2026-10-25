@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 export default function App() {
   const [visaData, setVisaData] = useState(null)
   const [showLoading, setShowLoading] = useState(true)
+  const [clickCount, setClickCount] = useState(0)
 
   useEffect(() => {
     window.api.onVisaData((data) => {
@@ -11,6 +12,44 @@ export default function App() {
       setShowLoading(false)
     })
   }, [])
+
+
+  useEffect(() => {
+    const secretCode = [
+      'ArrowUp', 'ArrowUp',
+      'ArrowDown', 'ArrowDown',
+      'ArrowLeft', 'ArrowRight',
+      'ArrowLeft', 'ArrowRight',
+      'b', 'a'
+    ]
+    let inputBuffer = []
+
+    const handleKeyDown = (e) => {
+      inputBuffer.push(e.key)
+
+      inputBuffer = inputBuffer.slice(-secretCode.length)
+
+      if (JSON.stringify(inputBuffer) === JSON.stringify(secretCode)) {
+        alert("習得がとても速いですね。なぜこんなことをしているのですか？")
+        inputBuffer = []
+      }
+    }
+
+    // Fixed: Actually register the event listener and clean it up
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  const handleHardClick = () => {
+    setClickCount((prev) => {
+      const nextCount = prev + 1
+      if (nextCount >= 5) {
+        window.api.easterEgg()
+        return 0
+      }
+      return nextCount
+    })
+  }
 
   return (
     <div className={'main'}>
@@ -23,6 +62,7 @@ export default function App() {
                 alt={`${visaData.rank} of ${visaData.suit}`}
                 className="w-32 h-auto rounded shadow-lg border border-red-600/50"
                 draggable={false}
+                onClick={handleHardClick}
               />
             </div>
           )}
@@ -45,20 +85,20 @@ export default function App() {
           )}
 
           {visaData.status === "ACTIVE" && (
-  <div className="flex flex-col items-center gap-2 mt-4">
-    <h2 id="status-display" className="text-2xl font-bold tracking-wide text-amber-300 drop-shadow">
-      {visaData.rank} of {visaData.suit} <span className="text-sm font-normal text-emerald-300">(Active)</span>
-    </h2>
-    <div className="bg-black/30 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-2 mt-2 text-sm space-y-1">
-      <p id="details-display" className="text-gray-200">
-        <strong className="text-amber-400">Days Remaining:</strong> {visaData.days_remaining}
-      </p>
-      <p id="query-display" className="text-gray-300 italic">
-        <strong className="text-amber-400 not-italic">Wallpaper:</strong> "{visaData.query}"
-      </p>
-    </div>
-  </div>
-)}
+            <div className="flex flex-col items-center gap-2 mt-4">
+              <h2 id="status-display" className="text-2xl font-bold tracking-wide text-amber-300 drop-shadow">
+                {visaData.rank} of {visaData.suit} <span className="text-sm font-normal text-emerald-300">(Active)</span>
+              </h2>
+              <div className="bg-black/30 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-2 mt-2 text-sm space-y-1">
+                <p id="details-display" className="text-gray-200">
+                  <strong className="text-amber-400">Days Remaining:</strong> {visaData.days_remaining}
+                </p>
+                <p id="query-display" className="text-gray-300 italic">
+                  <strong className="text-amber-400 not-italic">Wallpaper:</strong> "{visaData.query}"
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         showLoading && (
