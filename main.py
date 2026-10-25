@@ -1,33 +1,78 @@
-import wallpaper
+import json
 import visa
+import wallpaper
 
 if __name__ == "__main__":
     result = visa.run_visa_check()
     status = result.get("status")
+    frontend_data = {}
+    queries_to_download = []
+
+    download_needed = result.get("download_needed", True)
 
     if status == "PENALTY":
-        print(" SECURITY BREACH: Tampering detected! Face Card penalty deployed.")
-        print(" セキュリティ違反：改ざんが検知されました！絵札のペナルティが発動しました。")
-
         suit, rank, queries, days_valid = visa.draw_penalty_card()
-        card_label = f"PENALTY: {rank} of {suit}"
-        japan_card_label = f"ペナルティ：{suit}の{rank}"
+        card_label = f"Penalty: {rank} of {suit}"
+        queries_to_download = queries
 
-        print(f"You drew the {card_label}! Your visa is locked for {days_valid} days.")
-        print(f"{card_label}を引きました！あなたのビザは{days_valid}日間ロックされます。")
-        wallpaper.GET_VVALLPAPER_VVALLHAVEN(queries, card_label=card_label)
+        frontend_data = {
+            "status": "PENALTY",
+            "suit": suit,
+            "rank": rank,
+            "days_valid": days_valid,
+            "query": queries[0],
+            "label": card_label
+        }
 
     elif status == "NEW_CARD":
-        suit = result["suit"]
-        rank = result["rank"]
-        days_valid = result["days"]
-        queries = result["queries"]
+        suit = result['suit']
+        rank = result['rank']
+        days_valid = result['days']
+        queries = result['queries']
+        queries_to_download = queries
 
-        print(f"Drawn {rank} of {suit} (The visa will be active for {days_valid} days).")
-        print(f"{suit}の{rank}が引かれました（ビザは{days_valid}日間有効です）")
-        wallpaper.GET_VVALLPAPER_VVALLHAVEN(queries)
+        frontend_data = {
+            "status": "NEW_CARD",
+            "suit": suit,
+            "rank": rank,
+            "days_valid": days_valid,
+            "query": queries[0]
+        }
 
     elif status == "ACTIVE":
-        remaining = result["days_remaining"]
-        print(f"Visa is active. {remaining} days remaining.")
-        print(f"ビザは有効です。残り{remaining}日。")
+        remaining = result['days_remaining']
+        todays_query = result['query']
+        suit = result.get('suit', 'Unknown')
+        rank = result.get('rank', 'Unknown')
+        queries_to_download = [todays_query]
+        card_code = visa.get_card_code(rank, suit)
+        image_url = f"https://deckofcardsapi.com/static/img/{card_code}.png"
+
+        frontend_data = {
+            "status": "ACTIVE",
+            "days_remaining": remaining,
+            "query": todays_query,
+            "suit": suit,
+            "rank": rank,
+            "image_url": image_url
+        }
+
+    print(json.dumps(frontend_data), flush=True)
+
+    if download_needed:
+        try:
+            DETACHED_PROCESS = 0x00000008
+
+            import threading
+
+
+            def bg_download():
+                try:
+                    wallpaper.GET_VVALLPAPER_VVALLHAVEN(queries_to_download)
+                except:
+                    pass
+
+
+            threading.Thread(target=bg_download, daemon=True).start()
+        except Exception:
+            pass

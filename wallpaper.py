@@ -34,7 +34,6 @@ def GET_VVALLPAPER_VVALLHAVEN(queries = None):
         response = requests.get(url, params=params)
         if response.status_code == 200:
             data = response.json()
-            print(data)
             wallpapers = data.get('data', [])
             if wallpapers:
                 wp = wallpapers[0]
@@ -51,10 +50,6 @@ def GET_VVALLPAPER_VVALLHAVEN(queries = None):
 
     if FIRST_IMG_PATH:
         SET_VVALLPAPER(FIRST_IMG_PATH)
-        print("SUCCESS: Wallpapers downloaded and applied!")
-        print("成功: 壁紙のダウンロードと適用が完了しました！")
-    else:
-        print("NO WALLPAPERS COULD BE DOWNLOADED")
-        print("壁紙をダウンロードできませんでした")
+
 
 

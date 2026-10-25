@@ -1,0 +1,24 @@
+{
+  "name": "flux",
+  "version": "1.0.0",
+  "description": "<H1>FLVX</h1>\r This is a wallpaper app based on Alice in Borderland(yeah I'm kinda a fan of it rn) where you have wallpapers based on four categories that are  also in the show, visas and randomization (also there's a honeypXXXXXX)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Iqlas66/FluX.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Iqlas66/FluX/issues"
+  },
+  "homepage": "https://github.com/Iqlas66/FluX#readme",
+  "devDependencies": {
+    "electron": "^45.0.0"
+  }
+}
