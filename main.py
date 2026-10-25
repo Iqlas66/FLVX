@@ -1,7 +1,5 @@
 import json
 import visa
-import wallpaper
-import traceback
 import threading
 if __name__ == "__main__":
     result = visa.run_visa_check()
@@ -15,6 +13,8 @@ if __name__ == "__main__":
         suit, rank, queries, days_valid = visa.draw_penalty_card()
         card_label = f"Penalty: {rank} of {suit}"
         queries_to_download = queries
+        card_code = visa.get_card_code(rank, suit)
+        image_url = f"https://deckofcardsapi.com/static/img/{card_code}.png"
 
         frontend_data = {
             "status": "PENALTY",
@@ -22,7 +22,8 @@ if __name__ == "__main__":
             "rank": rank,
             "days_valid": days_valid,
             "query": queries[0],
-            "label": card_label
+            "label": card_label,
+            "image_url": image_url
         }
 
     elif status == "NEW_CARD":
@@ -31,13 +32,16 @@ if __name__ == "__main__":
         days_valid = result['days']
         queries = result['queries']
         queries_to_download = queries
+        card_code = visa.get_card_code(rank, suit)
+        image_url = f"https://deckofcardsapi.com/static/img/{card_code}.png"
 
         frontend_data = {
             "status": "NEW_CARD",
             "suit": suit,
             "rank": rank,
             "days_valid": days_valid,
-            "query": queries[0]
+            "query": queries[0],
+            "image_url": image_url
         }
 
     elif status == "ACTIVE":
@@ -63,17 +67,13 @@ if __name__ == "__main__":
     if download_needed:
         try:
             import wallpaper
-
-
             def bg_download():
                 try:
                     wallpaper.GET_VVALLPAPER_VVALLHAVEN(queries_to_download)
                 except:
                     pass
-
             t = threading.Thread(target=bg_download)
             t.start()
-
             t.join()
         except Exception:
             pass

@@ -13,7 +13,7 @@ function fetchVisaData(mainWindow) {
 
   exec(`python "${pythonScript}"`, { env: { ...process.env, PYTHONIOENCODING: 'utf-8' } }, (error, stdout, stderr) => {
     if (error) {
-      console.error(`Python execution error: ${error}`)
+      console.error(`Python execution error: ${error}`) //Returns python execution error
       return
     }
     if (stderr) {
@@ -21,10 +21,10 @@ function fetchVisaData(mainWindow) {
     }
 
     try {
-      const frontendData = JSON.parse(stdout)
+      const frontendData = JSON.parse(stdout) //Attempts to get JSON
       console.log('Received Visa Data:', frontendData)
       if (mainWindow && !mainWindow.isDestroyed()) {
-        mainWindow.webContents.send('visa-data-update', frontendData)
+        mainWindow.webContents.send('visa-data-update', frontendData) // Sends it to the front end
       }
     } catch (parseError) {
       console.error('Failed to parse JSON from python script:', parseError, stdout)
@@ -43,7 +43,7 @@ function createWindow() {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
     }
-  })
+  }) // Creates a 900 x 670 window
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
@@ -52,7 +52,7 @@ function createWindow() {
   mainWindow.on('close', (event) => {
     if (!app.isQuitting) {
       event.preventDefault()
-      mainWindow.hide()
+      mainWindow.hide() // Runs in BG
     }
   })
 
@@ -79,7 +79,7 @@ app.whenReady().then(() => {
 
   fetchVisaData(mainWindow)
 
-  tray = new Tray(icon)
+  tray = new Tray(icon) //  Exits  to tray
   const contextMenu = Menu.buildFromTemplate([
     { label: 'Show App', click: () => mainWindow.show() },
     {
@@ -87,8 +87,9 @@ app.whenReady().then(() => {
       click: () => {
         app.isQuitting = true
         app.quit()
-      }
-    }
+      }}
+
+
   ])
 
   tray.setToolTip('Background App')

@@ -1,14 +1,28 @@
-<H1>FLVX</h1>
-This is a wallpaper app based on Alice in Borderland(yeah I'm kinda a fan of it rn) where you have wallpapers based on four categories that are  also in the show, visas and randomization (also there's a honeypXXXXXX)
+# FLVX Borderland Visa
+An Electron & Python desktop app that manages daily visa inspired by *Alice in  Borderland*. It automatically deals the card for you, **suit** means  **which category you'll get**  and **rank** tells for **how long this theme will be**.
+## Features
+- **Daily Visa System:** Encrypted visa tracking using Python's `cryptography` and `keyring`.
+- **Automated Wallpapers:** Downloads and updates your desktop background dynamically via Wallhaven API.
+- **Poker Felt UI:** Retro card-table interface built with React, Tailwind CSS, and Electron.
 
-TO-DO:
+## Tech stack
+- **Frontend** - React, Tailwind, CSS, Vite
+- **Desktop Wrapper** - Electron
+- **Backend** - Python 3.13.13 (Fernet Encryption, Windows System API, Requests)
 
-[ ] Make it change wallpapers every day
-
-[ ]Add a GUI
-
-[ ]Make it work so that your coding time  depends  on the visa, and you do it every day
-
-[X] Update  README
-___
+## Getting started
+### Prerequisites
+- Node.js (18+)
+- Python (3.13.13)
+### Installation
+1. Clone the git repo `
+   git clone https://github.com/Iqlas66/FLVX`
+2. cd into flux `cd Flux`
+3. Install Python dependencies `pip install requests keyring cryptography
+`
+4. Cd into electron-app `cd electron-app`
+5. Install Node.js dependencies `npm install`
+6. Run dev `npm run dev`
+   
+-----------
 幸運を

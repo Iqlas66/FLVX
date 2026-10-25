@@ -8,7 +8,7 @@ from cryptography.fernet import Fernet, InvalidToken
 SERVICE_NAME = "FLVX_Borderland_System"
 KEY_NAME = "TOPPRIORITY"
 
-CACHE = Path(".flux_core_cache.dat")
+CACHE = Path(".flux_core_cache.dat") #CACHE
 MAIN_FILE = Path("visa.txt")
 DATE_FILE = Path("dates.txt")
 DAYS_FILE = Path("days_valid.txt")
@@ -19,11 +19,12 @@ SUITS = {
     "Hearts": ["horror mask", "broken glass"],
     "Clubs": ["four elements", "symmetry", "duality"]
 }
+
 RANKS = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 
 
 def get_or_create_key():
-    key = keyring.get_password(SERVICE_NAME, KEY_NAME)
+    key = keyring.get_password(SERVICE_NAME, KEY_NAME) #Gets key
     if key:
         try:
             key_bytes = key.encode() if isinstance(key, str) else key
@@ -32,8 +33,8 @@ def get_or_create_key():
         except Exception:
             pass
 
-    new_key = Fernet.generate_key()
-    keyring.set_password(SERVICE_NAME, KEY_NAME, new_key.decode())
+    new_key = Fernet.generate_key()  #Creates new if nonexistant
+    keyring.set_password(SERVICE_NAME, KEY_NAME, new_key.decode()) #Applies the key
     return new_key
 
 
@@ -73,7 +74,7 @@ def save_state(start_date, days_valid, queries, suit=None, rank=None, last_downl
         "last_download_date": str(last_download_date or datetime.date.today())
     }
     payload_str = json.dumps(payload, sort_keys=True).encode()
-    encrypted_data = f.encrypt(payload_str)
+    encrypted_data = f.encrypt(payload_str) #encrypts the data
     CACHE.write_bytes(encrypted_data)
 
 
@@ -89,8 +90,8 @@ def save_state(start_date, days_valid, queries, suit=None, rank=None, last_downl
 
 
 def draw_card():
-    suit = random.choice(list(SUITS.keys()))
-    rank = random.choice(RANKS)
+    suit = random.choice(list(SUITS.keys())) #Selects random suit
+    rank = random.choice(RANKS)#Selects random rank
     days_valid = RANKS.index(rank) + 1
     queries = random.choices(SUITS[suit], k=days_valid)
     today = datetime.date.today()
@@ -105,8 +106,6 @@ def draw_penalty_card():
         ("Diamonds", "Jack", 8, ["complex quantum grid", "labyrinthine code matrix"])
     ]
     suit, rank, days_valid, queries = random.choice(face_cards)
-    today = datetime.date.today()
-
     today = datetime.date.today()
     save_state(today, days_valid, queries, suit, rank, today)
     return suit, rank, queries, days_valid
